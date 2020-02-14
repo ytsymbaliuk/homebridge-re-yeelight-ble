@@ -1,6 +1,6 @@
 {
   "name": "homebridge-re-yeelight-ble",
-  "version": "0.0.4",
+  "version": "0.0.1",
   "description": "Mi Yeelight BLE plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "GPLV3",
   "keywords": [
@@ -8,10 +8,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://https://github.com/Zzm317/homebridge-re-yeelight-ble.git"
+    "url": "git://https://github.com/ytsymbaliuk/homebridge-re-yeelight-ble.git"
   },
   "bugs": {
-    "url": "https://github.com/Zzm317/homebridge-re-yeelight-ble/issues"
+    "url": "https://github.com/ytsymbaliuk/homebridge-re-yeelight-ble/issues"
   },
   "engines": {
     "node": ">=0.12.0",
