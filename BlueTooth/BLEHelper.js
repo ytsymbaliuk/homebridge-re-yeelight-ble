@@ -1,7 +1,7 @@
 require('./Base');
 const inherits = require('util').inherits;
 var PlatformAccessory, Accessory, Service, Characteristic, UUIDGen;
-var noble = require('@abandonware/noble');
+var noble = null;
 var timer;
 var yeeLamps = {};
 var BS_LAMP_NAME = 'XMCTD_';
@@ -26,7 +26,7 @@ BLEHelper = function(platform) {
     this.statee = true;
     this.yeeLamps = new Array();
     try {
-        this.noble = require('noble');
+        this.noble = require('@abandonware/noble');
 		this.platform.log("[ReYeelight][BLE]Noble loaded");
     } catch (ex) {
         this.statee = false;
