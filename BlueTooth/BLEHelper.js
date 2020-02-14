@@ -1,7 +1,7 @@
 require('./Base');
 const inherits = require('util').inherits;
 var PlatformAccessory, Accessory, Service, Characteristic, UUIDGen;
-var noble = null;
+var noble = require('@abandonware/noble');
 var timer;
 var yeeLamps = {};
 var BS_LAMP_NAME = 'XMCTD_';
