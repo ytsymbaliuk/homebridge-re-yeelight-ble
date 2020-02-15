@@ -5,7 +5,7 @@ var noble = null;
 var timer;
 var yeeLamps = {};
 var BS_LAMP_NAME = 'XMCTD_';
- 
+
 var SERVICE_UUID = '8e2f0cbd1a664b53ace6b494e25f87bd';
 var NOTIFY_CHARACT_UUID = '8f65073d9f574aaaafea397d19d5bbeb';
 var COMMAND_CHARACT_UUID = 'aa7d3f342d4f41e0807f52fbf8cf7443';
@@ -20,14 +20,14 @@ BLEHelper = function(platform) {
     Service = platform.Service;
     Characteristic = platform.Characteristic;
     UUIDGen = platform.UUIDGen;
-	
-	this.api = platform.api;
+
+        this.api = platform.api;
     var that = this;
     this.statee = true;
     this.yeeLamps = new Array();
     try {
         this.noble = require('@abandonware/noble');
-		this.platform.log("[ReYeelight][BLE]Noble loaded");
+                this.platform.log("[ReYeelight][BLE]Noble loaded");
     } catch (ex) {
         this.statee = false;
         this.platform.log.error("[ReYeelight][BLE]Unable to load BLE");
@@ -73,13 +73,13 @@ BLEHelper.prototype.updateTimer = function() {
 BLEHelper.prototype.SearchTimer = function() {
     var that = this;
     if(this.timer){
-		this.platform.log.debug('[ReYeelight][BLEDevice]start Scanning');
+                this.platform.log.debug('[ReYeelight][BLEDevice]start Scanning');
         this.noble.startScanning();
         var _timeout = 10000;
         setTimeout(function() {
-			this.platform.log.debug('[ReYeelight][BLEDevice]stop Scanning');
+                        this.platform.log.debug('[ReYeelight][BLEDevice]stop Scanning');
             this.noble.stopScanning();
-			this.cleanUp();
+                        this.cleanUp();
         }.bind(this), _timeout);
     }
 }
@@ -87,16 +87,16 @@ BLEHelper.prototype.SearchTimer = function() {
 BLEHelper.prototype.cleanUp = function() {
     var that = this;
     try{
-		for (var i in this.yeeLamps) {
-			yeeLamp = this.yeeLamps[i];
-			if(yeeLamp.connectionstatus == false){
-				that.platform.log.debug("[ReYeelight][BLEDevice]Deleting Unconnected " + yeeLamp.peripheral.id);
-				delete this.yeeLamps[i];
-			}
-		}
-	}catch(ex){
-		this.platform.log.error('[ReYeelight][BLEDevice]cleanUp: ' + ex);
-	}
+                for (var i in this.yeeLamps) {
+                        yeeLamp = this.yeeLamps[i];
+                        if(yeeLamp.connectionstatus == false){
+                                that.platform.log.debug("[ReYeelight][BLEDevice]Deleting Unconnected " + yeeLamp.peripheral.id);
+                                delete this.yeeLamps[i];
+                        }
+                }
+        }catch(ex){
+                this.platform.log.error('[ReYeelight][BLEDevice]cleanUp: ' + ex);
+        }
 }
 
 YeeBleLamp = function(dThis,peripheral){
@@ -111,55 +111,56 @@ YeeBleLamp = function(dThis,peripheral){
     this.bri = 100;
     this.sat = 100;
     this.hue = 0;
-	this.tokensan = peripheral.id;  
-	var namee = this.platform.getNameFormConfig(peripheral['address']);
-	this.name = namee ? namee : tokensan.substring(tokensan.length-8);
-	this.platform.log.info("[ReYeelight][BLEDevice]Device Added " + peripheral['address'] + ", Name: " + this.name);
+        this.tokensan = peripheral.id;
+    var tokensan = peripheral.id;
+        var namee = this.platform.getNameFormConfig(peripheral['address']);
+        this.name = namee ? namee : tokensan.substring(tokensan.length-8);
+        this.platform.log.info("[ReYeelight][BLEDevice]Device Added " + peripheral['address'] + ", Name: " + this.name);
     this.ConnectDevice(peripheral);
 }
 
 YeeBleLamp.prototype.ConnectDevice = function(peripheral) {
     var that = this;
-    that.platform.log.info("[ReYeelight][BLEDevice]Connecting " + peripheral['address']);     
+    that.platform.log.info("[ReYeelight][BLEDevice]Connecting " + peripheral['address']);
     peripheral.connect(function(error) {
         if (error < 0) {
             that.platform.log.error("[ReYeelight][BLEDevice]failed to connect!");
         } else {
             peripheral.discoverServices([SERVICE_UUID], function(error, services) {
-                that.platform.log.info("[ReYeelight][BLEDevice]Discovered Service"); 
+                that.platform.log.info("[ReYeelight][BLEDevice]Discovered Service");
                 var deviceInformationService = services[0];
-             
-                deviceInformationService.discoverCharacteristics(
-                    [COMMAND_CHARACT_UUID, NOTIFY_CHARACT_UUID], 
-                    function(error, characteristics) {
-						var stateee = false;
-						try{
-							that.commandCharact = characteristics[0]; 
-							that.notifyCharact = characteristics[1];
-							stateee = true;
-						}catch(ex){
-							that.platform.log.error('[ReYeelight][BLEDevice][ERROR]: ' + ex);
-						}
-						if(stateee){
-							that.notifyCharact.on('data', function(data, isNotify) {
-								that.handleBLENotify(data, isNotify);
-							});
-							that.notifyCharact.subscribe(function(error) {
-								// 43 67 for auth
-								bleCmd[0] = 0x43;
-								bleCmd[1] = 0x67;
-								// deadbeef as magic for our Pi
-								bleCmd[2] = 0xde;
-								bleCmd[3] = 0xad;
-								bleCmd[4] = 0xbe;
-								bleCmd[5] = 0xbf;
 
-								that.SendCmd(bleCmd);
-								that.platform.log.info('[ReYeelight][BLEDevice]notifications turned on');
-								this.connectionstatus = true;
-								that.Pair();
-						   });
-						}
+                deviceInformationService.discoverCharacteristics(
+                    [COMMAND_CHARACT_UUID, NOTIFY_CHARACT_UUID],
+                    function(error, characteristics) {
+                                                var stateee = false;
+                                                try{
+                                                        that.commandCharact = characteristics[0];
+                                                        that.notifyCharact = characteristics[1];
+                                                        stateee = true;
+                                                }catch(ex){
+                                                        that.platform.log.error('[ReYeelight][BLEDevice][ERROR]: ' + ex);
+                                                }
+                                                if(stateee){
+                                                        that.notifyCharact.on('data', function(data, isNotify) {
+                                                                that.handleBLENotify(data, isNotify);
+                                                        });
+                                                        that.notifyCharact.subscribe(function(error) {
+                                                                // 43 67 for auth
+                                                                bleCmd[0] = 0x43;
+                                                                bleCmd[1] = 0x67;
+                                                                // deadbeef as magic for our Pi
+                                                                bleCmd[2] = 0xde;
+                                                                bleCmd[3] = 0xad;
+                                                                bleCmd[4] = 0xbe;
+                                                                bleCmd[5] = 0xbf;
+
+                                                                that.SendCmd(bleCmd);
+                                                                that.platform.log.info('[ReYeelight][BLEDevice]notifications turned on');
+                                                                this.connectionstatus = true;
+                                                                that.Pair();
+                                                   });
+                                                }
                 });
             });
         }
@@ -173,7 +174,7 @@ YeeBleLamp.prototype.Pair = function() {
         if (!error) {
             that.platform.log.info('[ReYeelight][BLEDevice]Pair Success');
             that.connectionstatus = true;
-			that.TurnOff();
+                        that.TurnOff();
         } else {
             that.platform.log.error('[ReYeelight][BLEDevice]Pair error');
         }
@@ -221,7 +222,7 @@ YeeBleLamp.prototype.InitAccessory = function() {
             callback(null,this.bri);
         }.bind(this))
         .on('set', function(value, callback) {
-			this.bri = value;
+                        this.bri = value;
             if(value > 0) {
                 this.SetBrightness(value);
                 callback(null);
@@ -247,15 +248,15 @@ YeeBleLamp.prototype.InitAccessory = function() {
             this.SetColour(this.hue,value);
             callback(null);
         }.bind(this));
-    services.push(BedsideLampServices); 
+    services.push(BedsideLampServices);
     newAccessory.addService(BedsideLampServices, this.name);
     this.LampService = newAccessory;
-    this.platform.registerAccessory(newAccessory); 
+    this.platform.registerAccessory(newAccessory);
     this.LampService.getService(this.name).getCharacteristic(Characteristic.On).updateValue(true);
     this.cannotify = true;
     return services;
 }
-    
+
 YeeBleLamp.prototype.TurnOn = function() {
     var that = this;
     that.platform.log.debug('[ReYeelight][BLEDevice]send turn On command');
@@ -306,7 +307,7 @@ YeeBleLamp.prototype.SetColour = function(hue,sat) {
     bleCmd[6] = parseInt(this.bri.toString(16), 16);;
     this.SendCmd(bleCmd);
 }
-        
+
 YeeBleLamp.prototype.SendCmd = function(cmd) {
     var that = this;
     that.platform.log.debug('[ReYeelight][BLEDevice]sending command');
@@ -323,15 +324,15 @@ YeeBleLamp.prototype.SendCmd = function(cmd) {
 YeeBleLamp.prototype.handleBLENotify = function(data, isNotify) {
     var that = this;
     if(that.cannotify){
-        if (data[0] == 0x43 && data[1] == 0x45) { 
+        if (data[0] == 0x43 && data[1] == 0x45) {
             if (data[2] == 1)
                 this.LampService.getService(this.name).getCharacteristic(Characteristic.On).updateValue(true);
-            else 
+            else
                 this.LampService.getService(this.name).getCharacteristic(Characteristic.On).updateValue(false);
-			this.bri =  data[8];
+                        this.bri =  data[8];
             this.LampService.getService(this.name).getCharacteristic(Characteristic.Brightness).updateValue(data[8]);
             that.platform.log.debug("[ReYeelight][BLEDevice]power: " + data[2] + " bright: " + data[8]);
-        } 
+        }
     }
 }
 
